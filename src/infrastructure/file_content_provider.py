@@ -12,6 +12,8 @@ class FileContentProvider(IContentProvider):
         self.links_file = os.path.join(self.data_dir, 'links.json')
         self.images_dir = os.path.join(self.data_dir, 'images')
         self.template_file = os.path.join(self.data_dir, 'Template.txt')
+        self._pending_links_data = None
+        self._current_link_obj = None
 
     def get_post_content(self) -> Tuple[str, Optional[str]]:
         # 1. Pop from links.json
@@ -30,9 +32,11 @@ class FileContentProvider(IContentProvider):
         link_obj = None
         now = datetime.now()
         
-        # Loop until we find a valid link or run out
-        while links_data:
-            candidate = links_data.pop(0)
+        # Loop until we find a valid link
+        for candidate in links_data:
+            if candidate.get("published", False):
+                continue
+                
             exp_str = candidate.get("expiration_date")
             
             if exp_str:
@@ -40,19 +44,24 @@ class FileContentProvider(IContentProvider):
                     exp_date = datetime.fromisoformat(exp_str)
                     if exp_date < now:
                         print(f"Post {candidate.get('id')} has expired (expired on {exp_date}). Skipping.")
+                        candidate["published"] = True  # Mark as processed
+                        self._pending_links_data = links_data
                         continue
                 except ValueError:
                     print(f"Invalid expiration_date format for {candidate.get('id')}. Proceeding anyway.")
             
             # Found a valid one!
             link_obj = candidate
+            self._current_link_obj = candidate
+            self._pending_links_data = links_data
             break
-        
-        # Save the file without the extracted (or expired) links
-        with open(self.links_file, 'w', encoding='utf-8') as f:
-            json.dump(links_data, f, indent=2)
             
         if not link_obj:
+            # If we had expired links, save the state so they aren't checked again
+            if self._pending_links_data:
+                with open(self.links_file, 'w', encoding='utf-8') as f:
+                    json.dump(self._pending_links_data, f, indent=2)
+                self._pending_links_data = None
             return "No valid content available", None
             
         post_id = link_obj.get("id")
@@ -79,18 +88,24 @@ class FileContentProvider(IContentProvider):
             with open(self.template_file, 'r', encoding='utf-8') as f:
                 post_template = f.read()
 
-        # Safely handle the formatting so if {link} or {body} is missing it still works
-        try:
-            final_text = post_template.format(body=body_text, link=url)
-        except KeyError:
-            # Fallback if template is malformed (e.g., contains unescaped curly braces)
-            final_text = f"{body_text}\n\n{url}"
+        # Safely handle the formatting so if the text contains braces it doesn't crash
+        final_text = post_template.replace("{body}", body_text).replace("{link}", url)
             
         # 4. Resolve Image
         image_path = None
         if image_name:
-            full_image_path = os.path.join(self.images_dir, image_name)
+            # Extract just the filename in case the user provided a full path like "data/images/image.png"
+            base_image_name = os.path.basename(image_name)
+            full_image_path = os.path.join(self.images_dir, base_image_name)
             if os.path.exists(full_image_path):
                 image_path = full_image_path
                 
         return final_text, image_path
+
+    def mark_as_published(self) -> None:
+        if self._pending_links_data is not None and getattr(self, '_current_link_obj', None) is not None:
+            self._current_link_obj["published"] = True
+            with open(self.links_file, 'w', encoding='utf-8') as f:
+                json.dump(self._pending_links_data, f, indent=2)
+            self._pending_links_data = None
+            self._current_link_obj = None

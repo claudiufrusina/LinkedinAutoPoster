@@ -1,14 +1,9 @@
 [
   {
-    "id": "post_2",
-    "url": "https://example.com/update",
-    "image": "update.png",
-    "expiration_date": "2026-01-01T00:00:00"
-  },
-  {
-    "id": "post_3",
+    "id": "post_1",
     "url": "https://example.com/insight",
-    "image": "insight.jpg",
-    "expiration_date": "2027-01-01T00:00:00"
+    "image": "test_image.jpg",
+    "expiration_date": "2026-06-01T00:00:00",
+    "published": true
   }
 ]

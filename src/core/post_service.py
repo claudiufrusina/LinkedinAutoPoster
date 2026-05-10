@@ -19,4 +19,10 @@ class PostService:
         # 2. Publish via social client
         success = self.social_client.publish_post(text, image_path)
         
+        if success:
+            self.content_provider.mark_as_published()
+            print("Content marked as successfully published.")
+        else:
+            print("Post failed. Content was not deleted from the queue.")
+            
         return success

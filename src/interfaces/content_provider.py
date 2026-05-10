@@ -11,3 +11,10 @@ class IContentProvider(Protocol):
                 - The absolute path to an image file, or None if it's a text-only post.
         """
         ...
+
+    def mark_as_published(self) -> None:
+        """
+        Confirms that the retrieved content was successfully published.
+        This allows the provider to safely delete or mark the content as used.
+        """
+        ...
