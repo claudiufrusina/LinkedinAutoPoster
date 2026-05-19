@@ -330,3 +330,13 @@ environment:
 ```
 
 > 🔁 **Want to re-publish?** Click the **Reset** button in the Web GUI, or set `published = 0` in `links` and `last_published = NULL` in `texts`.
+
+---
+
+## 🖼️ Web GUI Preview
+
+Here is the **Post Manager Dashboard** showing a pending post ready to be published:
+
+![Web GUI Dashboard — LinkedIn Post Manager](docs/dashboard_preview.png)
+
+> The dashboard displays post cards with status badges, hashtag pills, company mentions, and quick action buttons. The dark glassmorphism theme provides a premium, modern look.
