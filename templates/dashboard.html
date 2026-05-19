@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — LinkedIn Post Manager{% endblock %}
+
+{% block content %}
+<section class="dashboard-header">
+  <h1>Post Dashboard</h1>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" role="region" aria-label="Post statistics">
+    <div class="stat-card">
+      <div class="stat-value total" id="stat-total">{{ stats.total | default(0) }}</div>
+      <div class="stat-label">Total Posts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value pending" id="stat-pending">{{ stats.pending | default(0) }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value published" id="stat-published">{{ stats.published | default(0) }}</div>
+      <div class="stat-label">Published</div>
+    </div>
+  </div>
+
+  <!-- Controls: Filters + New Post -->
+  <div class="dashboard-controls">
+    <div class="filter-group" role="group" aria-label="Filter posts">
+      <a href="{{ url_for('index') }}"
+         class="filter-btn {{ 'active' if not status_filter or status_filter == 'all' }}"
+         id="filter-all">All</a>
+      <a href="{{ url_for('index', status='pending') }}"
+         class="filter-btn {{ 'active' if status_filter == 'pending' }}"
+         id="filter-pending">Pending</a>
+      <a href="{{ url_for('index', status='published') }}"
+         class="filter-btn {{ 'active' if status_filter == 'published' }}"
+         id="filter-published">Published</a>
+    </div>
+
+    <a href="{{ url_for('new_post') }}" class="btn btn-primary" id="btn-create-new">
+      &#43; Create New Post
+    </a>
+  </div>
+</section>
+
+<!-- Posts Grid -->
+<section class="posts-grid" aria-label="Posts list">
+  {% if posts %}
+    {% for post in posts %}
+      <article class="card post-card" id="post-card-{{ post.id }}">
+        <div class="card-body">
+
+          <!-- Header: Title + Badge -->
+          <div class="post-card-header">
+            <h3>{{ post.title | default('Untitled', true) }}</h3>
+            {% if post.published == 1 %}
+              <span class="badge badge-published">Published</span>
+            {% elif post.expiration_date and post.expiration_date < now %}
+              <span class="badge badge-expired">Expired</span>
+            {% else %}
+              <span class="badge badge-pending">Pending</span>
+            {% endif %}
+          </div>
+
+          <!-- Body preview -->
+          {% if post.body %}
+            <p class="post-body-preview">{{ post.body | truncate(100, true, '…') }}</p>
+          {% endif %}
+
+          <!-- URL -->
+          {% if post.url %}
+            <a href="{{ post.url }}" class="post-url" target="_blank" rel="noopener noreferrer">
+              {{ post.url | truncate(55, true, '…') }}
+            </a>
+          {% endif %}
+
+          <!-- Company badge -->
+          {% if post.company_name %}
+            <div>
+              <span class="post-company">🏢 {{ post.company_name }}</span>
+            </div>
+          {% endif %}
+
+          <!-- Image thumbnail -->
+          {% if post.image %}
+            <img src="/images/{{ post.image }}"
+                 alt="Post image for {{ post.title | default('post', true) }}"
+                 class="post-thumbnail"
+                 loading="lazy">
+          {% endif %}
+
+          <!-- Hashtags -->
+          {% if post.hashtags_list %}
+            <div class="post-hashtags">
+              {% for tag in post.hashtags_list %}
+                <span class="hashtag-pill">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <!-- Actions -->
+          <div class="post-card-actions">
+            <a href="{{ url_for('edit_post', post_id=post.id) }}"
+               class="btn btn-outline btn-sm"
+               id="btn-edit-{{ post.id }}">
+              ✏️ Edit
+            </a>
+            <a href="{{ url_for('preview_post', post_id=post.id) }}"
+               class="btn btn-outline btn-sm"
+               id="btn-preview-{{ post.id }}">
+              👁️ Preview
+            </a>
+            <form action="{{ url_for('delete_post', post_id=post.id) }}"
+                  method="POST"
+                  onsubmit="return confirm('Are you sure you want to delete this post? This cannot be undone.');">
+              <button type="submit"
+                      class="btn btn-danger-outline btn-sm"
+                      id="btn-delete-{{ post.id }}">
+                🗑️ Delete
+              </button>
+            </form>
+            {% if post.published == 1 %}
+              <form action="{{ url_for('reset_post', post_id=post.id) }}" method="POST">
+                <button type="submit"
+                        class="btn btn-amber-outline btn-sm"
+                        id="btn-reset-{{ post.id }}">
+                  🔄 Reset
+                </button>
+              </form>
+            {% endif %}
+          </div>
+
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-icon">📝</div>
+      <h3>No posts yet</h3>
+      <p>Create your first post and start automating your LinkedIn presence!</p>
+      <a href="{{ url_for('new_post') }}" class="btn btn-primary">
+        &#43; Create Your First Post
+      </a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

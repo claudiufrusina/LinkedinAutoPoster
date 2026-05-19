@@ -33,4 +33,5 @@ data/images/*
 !data/images/.gitkeep
 data/texts.json
 data/links.txt
+data/posts.db
 *.log

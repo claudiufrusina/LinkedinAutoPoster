@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Preview — LinkedIn Post Manager{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-2">Post Preview</h1>
+
+<!-- LinkedIn-Style Preview Card -->
+<div class="linkedin-preview-wrapper">
+  <div class="linkedin-card" id="linkedin-preview-card">
+
+    <!-- Author Header -->
+    <div class="linkedin-card-header">
+      <div class="linkedin-avatar" aria-hidden="true">👤</div>
+      <div class="linkedin-author-info">
+        <div class="linkedin-author-name">You</div>
+        <div class="linkedin-author-meta">Just now &middot; 🌐</div>
+      </div>
+    </div>
+
+    <!-- Post Body -->
+    <div class="linkedin-card-body" id="preview-body">{{ preview_text }}</div>
+
+    <!-- Post Image -->
+    {% if post and post.image %}
+      <img src="/images/{{ post.image }}"
+           alt="Post image for {{ post.title | default('post', true) }}"
+           class="linkedin-card-image"
+           loading="lazy">
+    {% endif %}
+
+    <!-- Fake Engagement Bar -->
+    <div class="linkedin-engagement" aria-label="Engagement actions (decorative)">
+      <span class="linkedin-action">👍 Like</span>
+      <span class="linkedin-action">💬 Comment</span>
+      <span class="linkedin-action">🔄 Repost</span>
+      <span class="linkedin-action">✉️ Send</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Action Links -->
+<div class="preview-actions">
+  <a href="{{ url_for('index') }}" class="btn btn-outline" id="btn-back-dashboard">
+    ← Back to Dashboard
+  </a>
+  {% if post %}
+    <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-primary" id="btn-edit-from-preview">
+      ✏️ Edit Post
+    </a>
+  {% endif %}
+</div>
+
+<!-- Raw Data (Collapsible) -->
+{% if post %}
+<details class="raw-data" id="raw-data-section">
+  <summary>Raw Post Data</summary>
+  <div class="raw-data-content">
+    <div class="raw-data-row">
+      <span class="raw-data-key">Post ID</span>
+      <span class="raw-data-value">{{ post.id }}</span>
+    </div>
+    <div class="raw-data-row">
+      <span class="raw-data-key">Status</span>
+      <span class="raw-data-value">
+        {% if post.published == 1 %}
+          <span class="badge badge-published">Published</span>
+        {% elif post.expiration_date and post.expiration_date < now %}
+          <span class="badge badge-expired">Expired</span>
+        {% else %}
+          <span class="badge badge-pending">Pending</span>
+        {% endif %}
+      </span>
+    </div>
+    {% if post.expiration_date %}
+    <div class="raw-data-row">
+      <span class="raw-data-key">Expiration</span>
+      <span class="raw-data-value">{{ post.expiration_date }}</span>
+    </div>
+    {% endif %}
+    {% if post.company_name %}
+    <div class="raw-data-row">
+      <span class="raw-data-key">Company</span>
+      <span class="raw-data-value">{{ post.company_name }}</span>
+    </div>
+    {% endif %}
+    {% if post.company_urn %}
+    <div class="raw-data-row">
+      <span class="raw-data-key">Company URN</span>
+      <span class="raw-data-value">{{ post.company_urn }}</span>
+    </div>
+    {% endif %}
+    {% if post.last_published %}
+    <div class="raw-data-row">
+      <span class="raw-data-key">Last Published</span>
+      <span class="raw-data-value">{{ post.last_published }}</span>
+    </div>
+    {% endif %}
+  </div>
+</details>
+{% endif %}
+{% endblock %}
