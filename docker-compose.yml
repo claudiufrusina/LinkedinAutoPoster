@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  linkedin-poster:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linkedin_auto_poster
+    restart: unless-stopped
+    
+    # Mount the local data folder and environment secrets
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    
+    # Environment variables
+    environment:
+      # Set your local timezone (e.g., Europe/Rome, America/New_York, etc.)
+      # This ensures the scheduler matches your local time
+      - TZ=Europe/Rome
+      
+    # Internet connectivity configuration (Default is bridge, which has full internet access)
+    network_mode: bridge

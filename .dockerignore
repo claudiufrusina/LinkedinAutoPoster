@@ -1,0 +1,27 @@
+# Ignore local virtual environment
+venv/
+.venv/
+env/
+
+# Ignore Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Ignore Git files
+.git/
+.gitignore
+
+# Ignore Docker files in the build context
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Ignore environment file (we will mount it or pass vars instead, to keep secrets secure)
+.env
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
