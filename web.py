@@ -258,6 +258,6 @@ def serve_image(filename: str):
 # Entry Point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("WEB_PORT", 5001))
+    port = int(os.environ.get("WEB_PORT", 5000))
     print(f"Starting LinkedIn Post Manager on http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=True)

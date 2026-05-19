@@ -13,11 +13,13 @@ services:
       - ./data:/app/data
       - ./.env:/app/.env
     
+    # Expose the web GUI on port 5000
+    ports:
+      - "5000:5000"
+
     # Environment variables
     environment:
       # Set your local timezone (e.g., Europe/Rome, America/New_York, etc.)
       # This ensures the scheduler matches your local time
       - TZ=Europe/Rome
-      
-    # Internet connectivity configuration (Default is bridge, which has full internet access)
-    network_mode: bridge
+      - WEB_PORT=5000

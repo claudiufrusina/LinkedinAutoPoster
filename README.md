@@ -59,7 +59,7 @@ The project includes a **Flask-based web dashboard** for managing your posts vis
 ```bash
 python web.py
 ```
-Then open **http://localhost:5001** in your browser.
+Then open **http://localhost:5000** in your browser.
 
 > 💡 **Custom port:** Set `WEB_PORT=8080` in your `.env` file or as an environment variable.
 
@@ -232,7 +232,7 @@ You can add content in **two ways**:
 ```bash
 python web.py
 ```
-Open **http://localhost:5001**, click **"Create New Post"**, fill in the form, upload an image, and submit.
+Open **http://localhost:5000**, click **"Create New Post"**, fill in the form, upload an image, and submit.
 
 #### Option B: Manual Database Entry
 If you prefer, use any SQLite client (e.g., DB Browser for SQLite) to insert rows directly into the `links` and `texts` tables in `data/posts.db`.

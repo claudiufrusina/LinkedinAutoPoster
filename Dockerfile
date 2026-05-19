@@ -23,9 +23,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application files
 COPY . .
 
+# Make the startup script executable
+RUN chmod +x start.sh
+
 # Set default environment variables (can be overridden at runtime)
 ENV TZ=UTC
 ENV DRY_RUN=false
+ENV WEB_PORT=5000
 
-# Command to run the application
-CMD ["python", "main.py"]
+# Expose the web GUI port
+EXPOSE 5000
+
+# Command to run both the scheduler and web GUI
+CMD ["./start.sh"]
