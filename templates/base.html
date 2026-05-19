@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LinkedIn Post Manager{% endblock %}</title>
+
+  <!-- Google Fonts — Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+  <!-- ===== Navigation ===== -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-inner">
+      <a href="{{ url_for('index') }}" class="navbar-brand" aria-label="Home">
+        <span class="icon" aria-hidden="true">📋</span>
+        <span>LinkedIn Post Manager</span>
+      </a>
+
+      <ul class="navbar-links">
+        <li>
+          <a href="{{ url_for('index') }}"
+             class="{{ 'active' if request.endpoint == 'index' }}"
+             aria-current="{{ 'page' if request.endpoint == 'index' else 'false' }}">
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('new_post') }}"
+             class="{{ 'active' if request.endpoint == 'new_post' }}"
+             aria-current="{{ 'page' if request.endpoint == 'new_post' else 'false' }}">
+            New Post
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="main-content">
+    {# --- Flash Messages --- #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container" role="alert" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}" id="flash-{{ loop.index }}">
+              <span>{{ message }}</span>
+              <button type="button"
+                      class="flash-close"
+                      aria-label="Dismiss"
+                      data-dismiss="flash">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <p>LinkedIn Auto Poster &copy; 2026</p>
+  </footer>
+
+  <!-- ===== Inline Scripts ===== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      /* --- Flash auto-dismiss (5 s) & close button --- */
+      document.querySelectorAll('.flash').forEach(function (el) {
+        // Auto-dismiss
+        setTimeout(function () {
+          el.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+          el.style.opacity = '0';
+          el.style.transform = 'translateX(30px)';
+          setTimeout(function () { el.remove(); }, 350);
+        }, 5000);
+      });
+
+      document.querySelectorAll('[data-dismiss="flash"]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var flash = btn.closest('.flash');
+          flash.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+          flash.style.opacity = '0';
+          flash.style.transform = 'translateX(30px)';
+          setTimeout(function () { flash.remove(); }, 250);
+        });
+      });
+
+      /* --- Image preview on file input change --- */
+      var fileInput = document.getElementById('image-input');
+      var previewImg = document.getElementById('image-preview');
+      if (fileInput && previewImg) {
+        fileInput.addEventListener('change', function () {
+          var file = fileInput.files[0];
+          if (file && file.type.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              previewImg.src = e.target.result;
+              previewImg.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+          } else {
+            previewImg.classList.add('hidden');
+            previewImg.src = '';
+          }
+        });
+      }
+
+      /* --- Drag-and-drop handlers for upload zone --- */
+      var uploadZone = document.getElementById('upload-zone');
+      if (uploadZone && fileInput) {
+        // Click to open file picker
+        uploadZone.addEventListener('click', function () {
+          fileInput.click();
+        });
+
+        // Prevent default drag behaviors on the whole document
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (evt) {
+          uploadZone.addEventListener(evt, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+
+        // Visual feedback
+        ['dragenter', 'dragover'].forEach(function (evt) {
+          uploadZone.addEventListener(evt, function () {
+            uploadZone.classList.add('drag-over');
+          });
+        });
+
+        ['dragleave', 'drop'].forEach(function (evt) {
+          uploadZone.addEventListener(evt, function () {
+            uploadZone.classList.remove('drag-over');
+          });
+        });
+
+        // Handle dropped files
+        uploadZone.addEventListener('drop', function (e) {
+          var files = e.dataTransfer.files;
+          if (files.length > 0) {
+            fileInput.files = files;
+            // Trigger change event for preview
+            fileInput.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+
+    });
+  </script>
+
+  {% block scripts_extra %}{% endblock %}
+</body>
+</html>
