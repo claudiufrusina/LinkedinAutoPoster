@@ -2,13 +2,17 @@
 
 Welcome to the **LinkedIn Auto Poster**! This project is an automated, scheduled Python application designed to dynamically compose and publish posts (text + images + @mentions) to your LinkedIn profile. It follows a clean, SOLID architecture for maximum scalability.
 
+It includes a **Web GUI** for creating and managing posts through a premium dark-themed dashboard, and a **scheduler** that automatically publishes them to LinkedIn at configured times.
+
 ---
 
 ## 📁 Project Structure
 
 ```
 LinkedinAutoPosts/
-├── main.py                  # Entry point & scheduler
+├── main.py                  # Scheduler entry point (auto-publishes posts)
+├── web.py                   # Web GUI entry point (manage posts via browser)
+├── migrate_to_sqlite.py     # One-time JSON → SQLite migration script
 ├── run_poster.bat           # One-click Windows launcher
 ├── run_poster.sh            # Linux/Ubuntu bash launcher
 ├── requirements.txt         # Python dependencies
@@ -17,74 +21,112 @@ LinkedinAutoPosts/
 ├── .dockerignore            # Excludes build cache & local files
 ├── .env                     # Environment variables (secrets)
 ├── data/
-│   ├── links.json           # Post queue (links, images, mentions)
-│   ├── texts.json           # Content database (body text, hashtags)
+│   ├── posts.db             # SQLite database (links + texts tables)
 │   ├── Template.txt         # Post layout template
-│   └── images/              # Image assets for posts
+│   ├── images/              # Image assets for posts
+│   ├── links.json           # (Legacy) JSON post queue
+│   └── texts.json           # (Legacy) JSON content database
+├── templates/               # Jinja2 HTML templates for the Web GUI
+│   ├── base.html            # Layout shell (nav, flash messages, JS)
+│   ├── dashboard.html       # Post listing with stats & filters
+│   ├── post_form.html       # Create/edit form with image upload
+│   └── preview.html         # LinkedIn-style post preview
+├── static/
+│   └── style.css            # Premium dark-themed stylesheet
 └── src/
     ├── config.py             # Reads .env settings
     ├── core/
     │   └── post_service.py   # Orchestrates the full pipeline
     ├── infrastructure/
-    │   ├── auth.py                  # OAuth & token helper
-    │   ├── file_content_provider.py # Loads & assembles content
-    │   └── linkedin_client.py       # LinkedIn API integration
+    │   ├── auth.py                    # OAuth & token helper
+    │   ├── file_content_provider.py   # (Legacy) JSON-based content loader
+    │   ├── sqlite_content_provider.py # SQLite-based content loader (scheduler)
+    │   ├── sqlite_post_repository.py  # SQLite-based CRUD (Web GUI)
+    │   └── linkedin_client.py         # LinkedIn API integration
     └── interfaces/
-        ├── content_provider.py      # IContentProvider abstraction
-        └── social_client.py         # ISocialClient abstraction
+        ├── content_provider.py  # IContentProvider (read-only, publishing)
+        ├── post_repository.py   # IPostRepository (CRUD operations)
+        └── social_client.py     # ISocialClient abstraction
 ```
 
 ---
 
-## ⚙️ How the Pipeline Works
+## 🖥️ Web GUI — Post Manager
 
-The application uses an intelligent queuing system to build and publish your posts. Here is exactly what happens behind the scenes when a scheduled post triggers:
+The project includes a **Flask-based web dashboard** for managing your posts visually — no need to edit database files by hand.
 
-### 1. 📋 The Queue (`data/links.json`)
-Think of `links.json` as your "To-Do" list. When it's time to post, the script scans this file from top to bottom looking for the next valid entry:
-- ✅ **Published Check:** It skips any entry where `"published": true`.
-- ⏳ **Expiration Check:** It checks the `expiration_date`. If that date is in the past, it automatically marks the entry as published and moves on.
-- 🎯 **Extraction:** Once it finds a valid link, it extracts the `id` (e.g., `"post_1"`), the `url`, the `title`, the `image` filename, and optional `company_name` / `company_urn` for @mentions.
-- 🔒 **Safe Marking:** After a successful publish, it sets `"published": true` on the link. Your queue file is **never destructively modified** — only the flag changes.
-
-```json
-[
-  {
-    "id": "post_1",
-    "url": "https://example.com/article",
-    "title": "My Amazing Article",
-    "image": "article_banner.png",
-    "expiration_date": "2026-06-01T00:00:00",
-    "company_name": "Acme Corp",
-    "company_urn": "urn:li:organization:12345678",
-    "published": false
-  }
-]
+### Starting the Web GUI
+```bash
+python web.py
 ```
+Then open **http://localhost:5001** in your browser.
 
-### 2. 🗄️ The Content Database (`data/texts.json`)
-Next, the script opens `texts.json`, which acts as your permanent content database.
-- 🔍 It scans through all the objects until it finds the one where the `"id"` perfectly matches the ID it just pulled from the link (e.g., `"post_1"`).
-- 🛡️ **Duplicate Prevention:** It checks the `"last_published"` attribute. If it contains a date, the post has already been published and will be **skipped automatically** — no duplicate posts, ever.
-- ✍️ It extracts the `"body"` text and the `"hashtags"` array from that object.
+> 💡 **Custom port:** Set `WEB_PORT=8080` in your `.env` file or as an environment variable.
+
+### Features
+| Feature | Description |
+|---|---|
+| 📊 **Dashboard** | View all posts with status badges (Pending / Published / Expired), stats bar, and filter buttons |
+| ➕ **Create Post** | Fill in title, URL, body, hashtags, company mention, expiration date, and upload an image |
+| ✏️ **Edit Post** | Modify any field of an existing post, including replacing the image |
+| 👁️ **Preview** | See exactly how your post will look on LinkedIn, rendered through your `Template.txt` |
+| 🔄 **Reset** | Re-queue a published post back to pending status |
+| 🗑️ **Delete** | Remove a post and its associated image |
+| 🆔 **Auto-ID** | Leave the Post ID field empty and a unique ID will be auto-generated |
+
+> 📝 The Web GUI runs independently from the scheduler (`main.py`). Both share the same `data/posts.db` database and can run simultaneously.
+
+---
+
+## 💾 Data Storage — SQLite Database
+
+All post data is stored in a local **SQLite database** at `data/posts.db`. No external database server is needed — Python's built-in `sqlite3` module handles everything.
+
+The database contains two tables:
+
+### `links` table (Post metadata & queue)
+| Column | Type | Description |
+|---|---|---|
+| `id` | TEXT (PK) | Unique post identifier |
+| `url` | TEXT | URL to share |
+| `title` | TEXT | Post headline |
+| `image` | TEXT | Image filename in `data/images/` |
+| `expiration_date` | TEXT | ISO datetime (auto-skipped if past) |
+| `company_name` | TEXT | Company display name for @mention |
+| `company_urn` | TEXT | LinkedIn organization URN |
+| `published` | INTEGER | `0` = pending, `1` = published |
+
+### `texts` table (Post content)
+| Column | Type | Description |
+|---|---|---|
+| `id` | TEXT (PK) | Matches the link ID |
+| `body` | TEXT | Post body text |
+| `hashtags` | TEXT | JSON array, e.g. `["#job", "#hiring"]` |
+| `last_published` | TEXT | ISO timestamp of last publish |
+
+> 💡 **Migrating from JSON files:** If you have existing data in `links.json` and `texts.json`, run `python migrate_to_sqlite.py` to import them into the database.
+
+---
+
+## ⚙️ How the Scheduler Pipeline Works
+
+The scheduler (`main.py`) uses an intelligent queuing system to build and publish your posts automatically. Here is what happens when a scheduled post triggers:
+
+### 1. 📋 The Queue (`links` table)
+The scheduler scans the `links` table looking for the next valid entry:
+- ✅ **Published Check:** It skips any entry where `published = 1`.
+- ⏳ **Expiration Check:** It checks the `expiration_date`. If that date is in the past, it automatically marks the entry as published and moves on.
+- 🎯 **Extraction:** Once it finds a valid link, it extracts the `id`, `url`, `title`, `image` filename, and optional `company_name` / `company_urn` for @mentions.
+- 🔒 **Safe Marking:** After a successful publish, it sets `published = 1`. Your data is **never destructively modified** — only the flag changes.
+
+### 2. 🗄️ The Content (`texts` table)
+Next, the scheduler looks up the matching text entry:
+- 🔍 It finds the row where the `id` matches the link's ID.
+- 🛡️ **Duplicate Prevention:** It checks `last_published`. If it contains a timestamp, the post is **skipped automatically** — no duplicates.
+- ✍️ It extracts the `body` text and `hashtags` array.
 - 📝 Any `<br>` tags in the body are converted to real newlines for LinkedIn formatting.
 
-```json
-[
-    {
-        "id": "post_1",
-        "body": "Excited to share our latest innovation!<br>Check it out 👇",
-        "hashtags": [
-            "#job",
-            "#hiring",
-            "#technology"
-        ],
-        "last_published": ""
-    }
-]
-```
-
-> 💡 **Re-publishing a post:** To publish the same text again, simply set `"last_published"` back to `""` (empty string) in `texts.json`. This is the **only** way to re-enable a previously published text.
+> 💡 **Re-publishing a post:** Use the Web GUI's **Reset** button, or manually set `last_published = NULL` in the `texts` table and `published = 0` in the `links` table.
 
 ### 3. 🧩 The Assembler (`data/Template.txt`)
 Now the script has a raw text body, a URL, a title, and hashtags — but it needs to format them.
@@ -146,7 +188,7 @@ After a successful publish:
 
 ## 🔶 Dry Run Mode
 
-Test your entire pipeline **without actually publishing** to LinkedIn. In dry-run mode the script assembles the full post, prints it to the console, and then exits — nothing is sent to the API and no files are modified.
+Test your entire pipeline **without actually publishing** to LinkedIn. In dry-run mode the script assembles the full post, prints it to the console, and then exits — nothing is sent to the API and no data is modified.
 
 **Enable it in one of two ways:**
 
@@ -183,19 +225,33 @@ DRY_RUN=false
 ```
 
 ### 3. Add Your Content
-1. **Add a link** to `data/links.json` with a unique `id`, `url`, `title`, and optional `image` / `company` fields.
-2. **Add matching text** to `data/texts.json` with the same `id`, your `body` content, and `hashtags`.
-3. **Drop images** into `data/images/` if your posts include visuals.
+
+You can add content in **two ways**:
+
+#### Option A: Web GUI (Recommended)
+```bash
+python web.py
+```
+Open **http://localhost:5001**, click **"Create New Post"**, fill in the form, upload an image, and submit.
+
+#### Option B: Manual Database Entry
+If you prefer, use any SQLite client (e.g., DB Browser for SQLite) to insert rows directly into the `links` and `texts` tables in `data/posts.db`.
+
+> 💡 **Migrating legacy JSON data:** If you have existing `links.json` / `texts.json` files, run `python migrate_to_sqlite.py` once to import them.
 
 ### 4. Launch!
 
-#### 💻 Direct / Script Execution
+#### 🖥️ Web GUI (manage posts)
+```bash
+python web.py
+```
+
+#### 💻 Scheduler (auto-publish)
 * **Windows** (double-click or run):
   ```bash
   run_poster.bat
   ```
 * **Ubuntu / Linux**:
-  Make the launcher executable first:
   ```bash
   chmod +x run_poster.sh
   ./run_poster.sh
@@ -247,15 +303,30 @@ environment:
 ## 📊 Content Lifecycle at a Glance
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌──────────────┐     ┌────────────┐
-│  links.json │────▸│  texts.json  │────▸│ Template.txt │────▸│  LinkedIn  │
-│ published:  │     │last_published│     │  {body}      │     │   API 🚀   │
-│   false     │     │    ""        │     │  {link} ...  │     │            │
-└─────────────┘     └──────────────┘     └──────────────┘     └────────────┘
-       │                    │                                        │
-       ▼                    ▼                                        │
-  published: true    last_published:                                 │
-                     "2026-05-10T..."  ◀─────────────────────────────┘
+                    ┌──────────────────┐
+                    │   Web GUI 🖥️     │
+                    │  (create/edit/   │
+                    │   upload/reset)  │
+                    └────────┬─────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────┐
+│          SQLite Database (posts.db)      │
+│  ┌─────────────┐    ┌──────────────┐     │
+│  │ links table │    │ texts table  │     │
+│  │ published=0 │    │last_published│     │
+│  └──────┬──────┘    └──────┬───────┘     │
+└─────────┼──────────────────┼─────────────┘
+          │                  │
+          ▼                  ▼
+   ┌──────────────┐   ┌──────────────┐   ┌────────────┐
+   │  Scheduler   │──▸│ Template.txt │──▸│  LinkedIn  │
+   │  (main.py)   │   │  {body}      │   │   API 🚀   │
+   └──────────────┘   │  {link} ...  │   └─────┬──────┘
+                      └──────────────┘         │
+                                               ▼
+                                    published = 1
+                                    last_published = now()
 ```
 
-> 🔁 **Want to re-publish?** Set `"last_published": ""` in `texts.json` and `"published": false` in `links.json`.
+> 🔁 **Want to re-publish?** Click the **Reset** button in the Web GUI, or set `published = 0` in `links` and `last_published = NULL` in `texts`.
