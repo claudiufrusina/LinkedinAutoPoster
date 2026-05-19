@@ -2,7 +2,7 @@ import sys
 import time
 import schedule
 from src.config import POSTING_TIMES, MAX_POSTS_PER_DAY, DRY_RUN
-from src.infrastructure.file_content_provider import FileContentProvider
+from src.infrastructure.sqlite_content_provider import SqliteContentProvider
 from src.infrastructure.linkedin_client import LinkedInClient
 from src.core.post_service import PostService
 
@@ -13,7 +13,7 @@ def job():
     print("Running scheduled post creation...")
     
     # Dependency Injection
-    content_provider = FileContentProvider()
+    content_provider = SqliteContentProvider()
     social_client = LinkedInClient()
     post_service = PostService(content_provider, social_client, dry_run=dry_run)
     
