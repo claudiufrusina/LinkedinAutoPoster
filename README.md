@@ -10,7 +10,11 @@ Welcome to the **LinkedIn Auto Poster**! This project is an automated, scheduled
 LinkedinAutoPosts/
 ├── main.py                  # Entry point & scheduler
 ├── run_poster.bat           # One-click Windows launcher
+├── run_poster.sh            # Linux/Ubuntu bash launcher
 ├── requirements.txt         # Python dependencies
+├── Dockerfile               # Docker container configuration
+├── docker-compose.yml       # Docker Compose orchestration
+├── .dockerignore            # Excludes build cache & local files
 ├── .env                     # Environment variables (secrets)
 ├── data/
 │   ├── links.json           # Post queue (links, images, mentions)
@@ -22,11 +26,12 @@ LinkedinAutoPosts/
     ├── core/
     │   └── post_service.py   # Orchestrates the full pipeline
     ├── infrastructure/
-    │   ├── file_content_provider.py  # Loads & assembles content
-    │   └── linkedin_client.py        # LinkedIn API integration
+    │   ├── auth.py                  # OAuth & token helper
+    │   ├── file_content_provider.py # Loads & assembles content
+    │   └── linkedin_client.py       # LinkedIn API integration
     └── interfaces/
-        ├── content_provider.py       # IContentProvider abstraction
-        └── social_client.py          # ISocialClient abstraction
+        ├── content_provider.py      # IContentProvider abstraction
+        └── social_client.py         # ISocialClient abstraction
 ```
 
 ---
@@ -183,18 +188,59 @@ DRY_RUN=false
 3. **Drop images** into `data/images/` if your posts include visuals.
 
 ### 4. Launch!
-```bash
-# Windows — double-click or run:
-run_poster.bat
 
-# Or directly:
-python main.py
+#### 💻 Direct / Script Execution
+* **Windows** (double-click or run):
+  ```bash
+  run_poster.bat
+  ```
+* **Ubuntu / Linux**:
+  Make the launcher executable first:
+  ```bash
+  chmod +x run_poster.sh
+  ./run_poster.sh
+  ```
+* **Manual execution**:
+  ```bash
+  python3 main.py
+  ```
+* **Test without publishing (Dry Run)**:
+  ```bash
+  python3 main.py --dry-run
+  ```
 
-# Test without publishing:
-python main.py --dry-run
+---
+
+## 🐳 Docker Deployment
+
+The application includes full support for running inside Docker. Docker encapsulates all libraries, timezone differences, and network connectivity dependencies.
+
+### 1. Requirements
+* Docker installed on Windows (Docker Desktop) or Ubuntu.
+* Docker Compose installed.
+
+### 2. Standard Launch (Docker Compose)
+Docker Compose handles volume mounts so that modifications to post queues (`links.json`, `texts.json`) write back directly to the host machine.
+
+* **Build and run in the background:**
+  ```bash
+  docker-compose up -d --build
+  ```
+* **Follow live logs:**
+  ```bash
+  docker-compose logs -f
+  ```
+* **Stop the container:**
+  ```bash
+  docker-compose down
+  ```
+
+### 3. Custom Timezone
+The scheduler respects your local timezone by reading the `TZ` environment variable. You can customize this by editing the `environment` section of `docker-compose.yml`:
+```yaml
+environment:
+  - TZ=Europe/Rome  # Change to your local Olson timezone ID
 ```
-
-The scheduler will execute an initial run on startup, then continue running and trigger at your configured `POSTING_TIMES` every day.
 
 ---
 
