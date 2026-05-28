@@ -340,3 +340,10 @@ Here is the **Post Manager Dashboard** showing a pending post ready to be publis
 ![Web GUI Dashboard — LinkedIn Post Manager](docs/dashboard_preview.png)
 
 > The dashboard displays post cards with status badges, hashtag pills, company mentions, and quick action buttons. The dark glassmorphism theme provides a premium, modern look.
+
+
+## LICENSE
+
+This project is licensed under the **CC BY-NC 4.0** license — see the [LICENSE](LICENSE) file for details.
+
+**You may NOT use this software for commercial purposes or in company environments.**
