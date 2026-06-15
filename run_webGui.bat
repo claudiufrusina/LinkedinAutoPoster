@@ -4,7 +4,7 @@ cd /d "C:\Users\claudiu.frusina\Dev\External-Projects\LinkedinAutoPosts"
 
 :: Check if the virtual environment exists, otherwise use global python
 if exist venv\Scripts\python.exe (
-    venv\Scripts\python.exe main.py
+    venv\Scripts\python.exe web.py
 ) else (
-    python main.py
+    python web.py
 )

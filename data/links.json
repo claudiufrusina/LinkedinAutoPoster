@@ -1,12 +1,202 @@
 [
   {
-    "id": "post_1",
-    "url": "REPLACE_THIS_WITH_URL",
-    "title": "REPLACE_THIS_WITH_TITLE",
-    "image": "REPLACE_THIS_WITH_IMAGE_NAME",
-    "expiration_date": "REPLACE_THIS_WITH_EXPIRATION_DATE",
-    "company_name": "REPLACE_THIS_WITH_COMPANY_NAME",
-    "company_urn": "urn:li:organization:REPLACE_THIS_WITH_COMPANY_URN",
+    "id": "post_01",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/technology-project-manager-120726/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Technology Project Manager",
+    "image": "091b6ff0-71e4-4927-b66e-fa315b471d32.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_02",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/software-tester-118178/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Software Tester",
+    "image": "a5c89cda-dc78-4e30-981b-fd6cbe7ba5bc.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_03",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/agile-coach-118174/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Agile Coach",
+    "image": "a62fc957-a95b-4810-9368-760f070beaf1.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_04",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/fabric-platform-specialist-118033/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Fabric Platform Specialist",
+    "image": "b19018b8-b0c8-404b-99e5-9eed6b8e298b.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_05",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/system-administrator-cloud-printing-specialist-117955/it/?jd=LinkedinClaudiuFrusina",
+    "title": "System Administrator - Cloud Printing Specialist",
+    "image": "c927538f-da03-4688-993f-e7adb319df8c.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_06",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/business-analyst-transport-management-systems-122245/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Business Analyst (Transport Management System)",
+    "image": "ce8f5d6c-4574-4486-b758-bcd8a7f8940c.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_07",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/net-developer-senior-109767/it/?jd=LinkedinClaudiuFrusina",
+    "title": ".NET Developer Senior",
+    "image": "d8e3eb54-9469-42fc-b4c1-70c3970db8b0.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_08",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/soc-engineer-109330/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Cyber Security Operations Center Engineer",
+    "image": "efbf6741-54e7-4bed-b355-2eee9a2df8ca.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_09",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/data-engineer-94075/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Data Engineer",
+    "image": "f1c89cda-dc78-4e30-981b-fd6cbe7ba5bc.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_10",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/artificial-intelligence-engineer-84929/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Artificial Intelligence Engineer",
+    "image": "ce8f5d6c-4574-4486-b758-bcd8a7f8940c.png",
+    "expiration_date": "2026-06-01T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": true
+  },
+  {
+    "id": "post_11",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/devsecops-engineer-128723/it/?jd=LinkedinClaudiuFrusina",
+    "title": "DevSecOps Engineer",
+    "image": "091b6ff0-71e4-4927-b66e-fa315b471d32.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_12",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/database-support-specialist-128648/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Database Support Specialist",
+    "image": "a5c89cda-dc78-4e30-981b-fd6cbe7ba5bc.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_13",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/devops-engineer-127964/it/?jd=LinkedinClaudiuFrusina",
+    "title": "DevOps Engineer",
+    "image": "a62fc957-a95b-4810-9368-760f070beaf1.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_14",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/power-platform-developer-127960/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Power Platform Developer",
+    "image": "b19018b8-b0c8-404b-99e5-9eed6b8e298b.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_15",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/wms-software-developer-127906/it/?jd=LinkedinClaudiuFrusina",
+    "title": "WMS Software Developer",
+    "image": "c927538f-da03-4688-993f-e7adb319df8c.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_16",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/business-analyst-transport-management-systems-122245/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Logistic Business Analyst",
+    "image": "ce8f5d6c-4574-4486-b758-bcd8a7f8940c.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_17",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/technology-project-manager-120726/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Project Manager",
+    "image": "d8e3eb54-9469-42fc-b4c1-70c3970db8b0.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_18",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/software-tester-118178/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Tester",
+    "image": "efbf6741-54e7-4bed-b355-2eee9a2df8ca.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_19",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/agile-coach-118174/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Agile Coach",
+    "image": "f1c89cda-dc78-4e30-981b-fd6cbe7ba5bc.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
+    "published": false
+  },
+  {
+    "id": "post_20",
+    "url": "https://msc-technology-italia.intervieweb.it/jobs/fabric-platform-specialist-118033/it/?jd=LinkedinClaudiuFrusina",
+    "title": "Fabric Platform Specialist",
+    "image": "ce8f5d6c-4574-4486-b758-bcd8a7f8940c.png",
+    "expiration_date": "2026-06-05T00:00:00",
+    "company_name": "MSC Technology Italia",
+    "company_urn": "urn:li:organization:84316480",
     "published": false
   }
 ]
